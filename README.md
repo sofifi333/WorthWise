@@ -27,10 +27,10 @@ cd worthwise
     ENVIRONMENT=dev
 
     # Database - MySQL
-    DATABASE_URL=mysql+pymysql://user:yourpassword@localhost:3306/worthwise
+    DATABASE_URL=mysql+pymysql://yourusername:yourpassword@localhost:3306/worthwise
     MYSQL_HOST=localhost
     MYSQL_PORT=3306
-    MYSQL_USER=worthwise
+    MYSQL_USER=yourusername
     MYSQL_PASSWORD=yourpassword
     MYSQL_DATABASE=worthwise
 
@@ -48,7 +48,16 @@ cd worthwise
     HOST=0.0.0.0
     PORT=8000
     ```
-
+3. Navigate to the `etl` directory
+4. Create a `.env` file and add the following (edit MySQL credentials as needed):
+   ```
+   # MySQL Configuration
+    MYSQL_HOST=localhost
+    MYSQL_PORT=3306
+    MYSQL_USER=yourusername
+    MYSQL_PASSWORD=yourpassword
+    MYSQL_DATABASE=worthwise
+   ```
 #### Frontend
 
 1. Navigate to the `frontend` directory.
