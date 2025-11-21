@@ -41,21 +41,40 @@ export function ComparisonChart({ comparisons, metric }: ComparisonChartProps) {
     earnings: 'Year 1 Earnings',
   };
 
+  const getBarColor = () => {
+    switch (metric) {
+      case 'cost':
+        return '#3b82f6'; // blue-500
+      case 'debt':
+        return '#ef4444'; // red-500
+      case 'earnings':
+        return '#10b981'; // green-500
+      default:
+        return '#6366f1'; // indigo-500
+    }
+  };
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+        <XAxis dataKey="name" stroke="#64748b" />
+        <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} stroke="#64748b" />
         <Tooltip 
           formatter={(value) => formatCurrency(value as number)}
           labelFormatter={(label) => {
             const item = chartData.find(d => d.name === label);
             return item ? `${label}: ${item.institution}` : label;
           }}
+          contentStyle={{ 
+            backgroundColor: 'white', 
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+          }}
         />
         <Legend />
-        <Bar dataKey="value" fill="#18181b" name={metricLabels[metric]} />
+        <Bar dataKey="value" fill={getBarColor()} name={metricLabels[metric]} radius={[8, 8, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

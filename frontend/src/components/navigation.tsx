@@ -22,9 +22,9 @@ export function Navigation() {
     <nav className="border-b border-zinc-200 bg-white">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <h1 className="text-xl font-bold text-blue-900">WorthWise</h1>
-            <span className="text-sm text-zinc-500">College ROI Planner</span>
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
+            <h1 className="text-xl font-bold text-blue-900 whitespace-nowrap">WorthWise</h1>
+            <span className="text-sm text-zinc-500 whitespace-nowrap hidden sm:inline">College ROI Planner</span>
           </Link>
           
           <div className="flex gap-6">

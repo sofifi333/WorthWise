@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { FormField } from '@/components/form-field';
 import { KPICard } from '@/components/kpi-card';
 import { LoadingState } from '@/components/loading-spinner';
@@ -21,6 +22,7 @@ import { CostBreakdownChart } from '@/components/charts/cost-breakdown-chart';
 import { EarningsChart } from '@/components/charts/earnings-chart';
 import { InstitutionSelector } from '@/components/institution-selector';
 import { formatCurrency, formatPercent, formatNumber, formatRatio } from '@/lib/utils';
+import { Calculator, GraduationCap, Home, DollarSign, MapPin, Download, RotateCcw, Sparkles, Database } from 'lucide-react';
 
 export default function PlannerPage() {
   // Form state
@@ -119,22 +121,38 @@ export default function PlannerPage() {
   const canCompute = formData.institution_id > 0 && formData.cip_code !== '';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-12">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900">College ROI Planner</h1>
-        <p className="text-zinc-600 mt-2">
-          Plan your college investment by selecting an institution and major, then customize your assumptions to see detailed financial projections.
-        </p>
+      <div className="relative">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-3xl blur-3xl opacity-50"></div>
+        <div className="bg-gradient-to-br from-white/80 to-blue-50/80 backdrop-blur-sm rounded-2xl border-2 border-blue-100 p-8 shadow-lg overflow-visible min-h-0">
+          <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0">
+            <Calculator className="w-3 h-3 mr-1" />
+            ROI Calculator
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 break-words overflow-visible">
+            College ROI Planner
+          </h1>
+          <p className="text-lg text-slate-600 mt-3 max-w-3xl">
+            Plan your college investment by selecting an institution and major, then customize your assumptions to see detailed financial projections.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form Controls */}
         <div className="lg:col-span-1 space-y-6">
-          <Card>
+          <Card className="border-2 hover:border-blue-200 transition-all shadow-md hover:shadow-lg bg-white/80 backdrop-blur">
             <CardHeader>
-              <CardTitle>Institution & Program</CardTitle>
-              <CardDescription>Select your school and major</CardDescription>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Institution & Program</CardTitle>
+                  <CardDescription>Select your school and major</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField label="Institution" htmlFor="institution" required>
@@ -201,9 +219,14 @@ export default function PlannerPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 hover:border-green-200 transition-all shadow-md hover:shadow-lg bg-white/80 backdrop-blur">
             <CardHeader>
-              <CardTitle>Housing</CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                  <Home className="w-5 h-5 text-white" />
+                </div>
+                <CardTitle className="text-xl">Housing</CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField label="Housing Type" htmlFor="housing">
@@ -249,10 +272,17 @@ export default function PlannerPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 hover:border-purple-200 transition-all shadow-md hover:shadow-lg bg-white/80 backdrop-blur">
             <CardHeader>
-              <CardTitle>Monthly Expenses</CardTitle>
-              <CardDescription>Leave blank for $0 (no expense)</CardDescription>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Monthly Expenses</CardTitle>
+                  <CardDescription>Leave blank for $0 (no expense)</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField label="Utilities" htmlFor="utilities">
@@ -301,9 +331,14 @@ export default function PlannerPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 hover:border-indigo-200 transition-all shadow-md hover:shadow-lg bg-white/80 backdrop-blur">
             <CardHeader>
-              <CardTitle>Financial Aid & Loans</CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <CardTitle className="text-xl">Financial Aid & Loans</CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField label="Annual Grants/Scholarships" htmlFor="aid">
@@ -354,10 +389,17 @@ export default function PlannerPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 hover:border-orange-200 transition-all shadow-md hover:shadow-lg bg-white/80 backdrop-blur">
             <CardHeader>
-              <CardTitle>Post-Graduation Region</CardTitle>
-              <CardDescription>Where will you work after graduation?</CardDescription>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Post-Graduation Region</CardTitle>
+                  <CardDescription>Where will you work after graduation?</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <FormField label="Region" htmlFor="region">
@@ -377,16 +419,17 @@ export default function PlannerPage() {
             </CardContent>
           </Card>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button
               onClick={handleCompute}
               disabled={!canCompute || computeMutation.isPending}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all h-12"
             >
+              <Calculator className="w-4 h-4 mr-2" />
               {computeMutation.isPending ? 'Computing...' : 'Calculate ROI'}
             </Button>
-            <Button onClick={handleReset} variant="outline">
-              Reset
+            <Button onClick={handleReset} variant="outline" className="border-2 hover:bg-slate-50 h-12 px-4">
+              <RotateCcw className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -481,9 +524,12 @@ export default function PlannerPage() {
               </div>
 
               {/* Charts */}
-              <Card>
+              <Card className="border-2 border-blue-100 shadow-lg bg-white/80 backdrop-blur">
                 <CardHeader>
-                  <CardTitle>Cost Breakdown</CardTitle>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <DollarSign className="w-6 h-6 text-blue-600" />
+                    Cost Breakdown
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CostBreakdownChart
@@ -496,9 +542,12 @@ export default function PlannerPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-2 border-green-100 shadow-lg bg-white/80 backdrop-blur">
                 <CardHeader>
-                  <CardTitle>Earnings Progression</CardTitle>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <Sparkles className="w-6 h-6 text-green-600" />
+                    Earnings Progression
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <EarningsChart
@@ -512,21 +561,25 @@ export default function PlannerPage() {
               </Card>
 
               {/* Export Button */}
-              <Button onClick={handleExport} variant="outline" className="w-full">
+              <Button onClick={handleExport} variant="outline" className="w-full border-2 hover:border-blue-400 hover:bg-blue-50 h-12 text-base font-semibold group">
+                <Download className="w-4 h-4 mr-2 group-hover:translate-y-0.5 transition-transform" />
                 Export Scenario to CSV
               </Button>
 
               {/* Data Versions */}
-              <Card>
+              <Card className="border-2 border-slate-200 bg-slate-50/50 backdrop-blur">
                 <CardHeader>
-                  <CardTitle>Data Sources</CardTitle>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Database className="w-5 h-5 text-slate-600" />
+                    Data Sources
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm space-y-1">
+                  <div className="text-sm space-y-2">
                     {Object.entries(result.data_versions).map(([dataset, version]) => (
-                      <div key={dataset} className="flex justify-between">
-                        <span className="text-zinc-600">{dataset}:</span>
-                        <span className="font-mono text-zinc-900">{String(version)}</span>
+                      <div key={dataset} className="flex justify-between items-center py-2 px-3 bg-white rounded-lg">
+                        <span className="text-slate-700 font-medium">{dataset}</span>
+                        <span className="font-mono text-slate-900 bg-slate-100 px-2 py-1 rounded">{String(version)}</span>
                       </div>
                     ))}
                   </div>
@@ -536,10 +589,13 @@ export default function PlannerPage() {
           )}
 
           {!result && !computeMutation.isPending && !computeMutation.isError && (
-            <Card>
-              <CardContent className="py-12">
-                <div className="text-center text-zinc-500">
-                  <p>Select an institution and major, then click &quot;Calculate ROI&quot; to see your results.</p>
+            <Card className="border-2 border-dashed border-slate-300 bg-slate-50/50">
+              <CardContent className="py-16">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Calculator className="w-10 h-10 text-blue-600" />
+                  </div>
+                  <p className="text-slate-600 text-lg">Select an institution and major, then click <span className="font-semibold">&quot;Calculate ROI&quot;</span> to see your results.</p>
                 </div>
               </CardContent>
             </Card>

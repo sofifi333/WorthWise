@@ -194,6 +194,48 @@ def load_campuses(institutions_df: pd.DataFrame):
     """
     print("Loading campuses table...")
     
+    engine = create_db_engine()
+    
+    # Verify table exists with proper schema
+    with engine.connect() as conn:
+        result = conn.execute(text("SHOW TABLES LIKE 'campuses'"))
+        if not result.fetchone():
+            # Get database connection details from environment for error message
+            import os
+            db_host = os.getenv('DB_HOST', 'localhost')
+            db_name = os.getenv('DB_NAME', 'worthwise')
+            db_user = os.getenv('DB_USER', 'root')
+            
+            raise RuntimeError(
+                "\n\n"
+                "=" * 70 + "\n"
+                "ERROR: campuses table does not exist!\n"
+                "=" * 70 + "\n\n"
+                "The campuses table needs to be created on your Aiven database.\n\n"
+                "QUICK FIX - Run this script:\n\n"
+                "  cd database/migrations\n"
+                "  powershell -ExecutionPolicy Bypass -File apply_migration_3.ps1\n\n"
+                "Or manually:\n\n"
+                f"  mysql -u {db_user} -p -h {db_host} {db_name} < database/migrations/migration_3.sql\n\n"
+                "Or use Aiven Web Console:\n"
+                "  1. Go to Aiven Console -> Query Editor\n"
+                "  2. Copy-paste: database/migrations/migration_3.sql\n"
+                "  3. Execute\n\n"
+                "Why: Aiven enforces sql_require_primary_key=ON, preventing dynamic table creation.\n"
+                "=" * 70 + "\n"
+            )
+        
+
+        result = conn.execute(text("DESCRIBE campuses"))
+        columns = {row[0] for row in result.fetchall()}
+        required = {'id', 'institution_id', 'campus_name', 'city', 'state_code', 'zip', 'is_main', 'is_active'}
+        missing = required - columns
+        if missing:
+            raise RuntimeError(
+                f"campuses table is missing required columns: {missing}. "
+                f"Drop the table and recreate it using database/schema.sql"
+            )
+    
     # Create campus records from institutions
     campuses = pd.DataFrame({
         'institution_id': institutions_df['id'],
@@ -205,9 +247,22 @@ def load_campuses(institutions_df: pd.DataFrame):
         'is_active': institutions_df['is_operating']
     })
     
-    # Load to database
-    engine = create_db_engine()
-    campuses.to_sql('campuses', engine, if_exists='replace', index=False, method='multi', chunksize=1000)
+    # Filter campuses to only include those with valid state codes (matching institutions filter)
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT state_code FROM states"))
+        valid_state_codes = {row[0] for row in result}
+    
+    campuses = campuses[campuses['state_code'].isin(valid_state_codes)]
+    print(f"Filtered to {len(campuses)} campuses with valid state codes")
+    
+    with engine.connect() as conn:
+        conn.execute(text("SET FOREIGN_KEY_CHECKS = 0"))
+        conn.execute(text("DELETE FROM campuses"))  # Use DELETE instead of TRUNCATE for safety
+        conn.execute(text("SET FOREIGN_KEY_CHECKS = 1"))
+        conn.commit()
+    
+
+    campuses.to_sql('campuses', engine, if_exists='append', index=False, method='multi', chunksize=1000)
     
     print(f"Loaded {len(campuses)} campuses")
 

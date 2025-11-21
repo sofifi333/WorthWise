@@ -119,4 +119,97 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Fix vertical clipping for gradient text - optimized for desktop */
+  [class*="bg-clip-text"] {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+  }
+  
+  /* Base styles for all gradient text */
+  h1[class*="bg-clip-text"],
+  h2[class*="bg-clip-text"],
+  [class*="bg-clip-text"] {
+    line-height: 1.2;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Desktop optimization - larger screens need more vertical space */
+  @media (min-width: 768px) {
+    h1[class*="bg-clip-text"] {
+      line-height: 1.15;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    
+    h2[class*="bg-clip-text"] {
+      line-height: 1.2;
+      padding-top: 0.625rem;
+      padding-bottom: 0.625rem;
+    }
+  }
+  
+  /* Large desktop screens - maximum vertical space */
+  @media (min-width: 1024px) {
+    h1[class*="text-7xl"][class*="bg-clip-text"] {
+      line-height: 1.1;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    
+    h1[class*="text-6xl"][class*="bg-clip-text"] {
+      line-height: 1.15;
+      padding-top: 0.875rem;
+      padding-bottom: 0.875rem;
+    }
+    
+    h1[class*="text-5xl"][class*="bg-clip-text"],
+    h1[class*="text-4xl"][class*="bg-clip-text"] {
+      line-height: 1.2;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    
+    h2[class*="bg-clip-text"] {
+      line-height: 1.25;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+  }
+  
+  /* Extra large desktop - ensure no clipping */
+  @media (min-width: 1280px) {
+    h1[class*="text-7xl"][class*="bg-clip-text"] {
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+    }
+  }
+}
+
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
 }

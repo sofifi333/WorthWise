@@ -25,7 +25,7 @@ export default function RootLayout({
         <QueryProvider>
           <div className="min-h-screen bg-zinc-50">
             <Navigation />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-8 overflow-visible">
               {children}
             </main>
           </div>

@@ -12,12 +12,17 @@ import type { ComputeRequest, CompareResponse } from '@/types/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { FormField } from '@/components/form-field';
 import { LoadingState } from '@/components/loading-spinner';
 import { ErrorState } from '@/components/error-state';
 import { ComparisonChart } from '@/components/charts/comparison-chart';
 import { InstitutionSelector } from '@/components/institution-selector';
 import { formatCurrency, formatPercent, formatNumber, formatRatio } from '@/lib/utils';
+import { GitCompare, Plus, X, Download, BarChart3, TrendingUp, DollarSign, Sparkles, Award, Target, Percent, Clock } from 'lucide-react';
+import { MultiMetricChart } from '@/components/charts/multi-metric-chart';
+import { PercentageChart } from '@/components/charts/percentage-chart';
+import { NumericChart } from '@/components/charts/numeric-chart';
 
 export default function ComparePage() {
   const [scenarios, setScenarios] = useState<ComputeRequest[]>([
@@ -153,44 +158,80 @@ export default function ComparePage() {
   const canCompare = scenarios.some(s => s.institution_id > 0 && s.cip_code !== '');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-12">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-zinc-900">Compare Scenarios</h1>
-          <p className="text-zinc-600 mt-2">
-            Add up to 4 scenarios to compare side-by-side. See how different institutions and majors stack up.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={addScenario} disabled={scenarios.length >= 4} variant="outline">
-            Add Scenario ({scenarios.length}/4)
-          </Button>
-          <Button onClick={handleCompare} disabled={!canCompare || compareMutation.isPending}>
-            {compareMutation.isPending ? 'Comparing...' : 'Compare'}
-          </Button>
+      <div className="relative">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 rounded-3xl blur-3xl opacity-50"></div>
+        <div className="bg-gradient-to-br from-white/80 to-purple-50/80 backdrop-blur-sm rounded-2xl border-2 border-purple-100 p-8 shadow-lg overflow-visible min-h-0">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <Badge className="mb-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0">
+                <GitCompare className="w-3 h-3 mr-1" />
+                Side-by-Side Analysis
+              </Badge>
+              <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-purple-900 to-pink-900 break-words overflow-visible">
+                Compare Scenarios
+              </h1>
+              <p className="text-lg text-slate-600 mt-3 max-w-2xl">
+                Add up to 4 scenarios to compare side-by-side. See how different institutions and majors stack up.
+              </p>
+            </div>
+            <div className="flex gap-3 shrink-0">
+              <Button 
+                onClick={addScenario} 
+                disabled={scenarios.length >= 4} 
+                variant="outline"
+                className="border-2 hover:border-purple-400 hover:bg-purple-50 h-12 px-6"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Scenario ({scenarios.length}/4)
+              </Button>
+              <Button 
+                onClick={handleCompare} 
+                disabled={!canCompare || compareMutation.isPending}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all h-12 px-6"
+              >
+                <GitCompare className="w-4 h-4 mr-2" />
+                {compareMutation.isPending ? 'Comparing...' : 'Compare'}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Scenario Builder */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {scenarios.map((scenario, idx) => (
-          <Card key={idx}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Scenario {idx + 1}</CardTitle>
-                {scenarios.length > 1 && (
-                  <Button
-                    onClick={() => removeScenario(idx)}
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                  >
-                    ×
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {scenarios.map((scenario, idx) => {
+          const colors = [
+            { border: 'border-blue-200', bg: 'from-blue-500 to-blue-600', hover: 'hover:border-blue-300' },
+            { border: 'border-green-200', bg: 'from-green-500 to-green-600', hover: 'hover:border-green-300' },
+            { border: 'border-purple-200', bg: 'from-purple-500 to-purple-600', hover: 'hover:border-purple-300' },
+            { border: 'border-orange-200', bg: 'from-orange-500 to-orange-600', hover: 'hover:border-orange-300' },
+          ];
+          const color = colors[idx % colors.length];
+          
+          return (
+            <Card key={idx} className={`border-2 ${color.border} ${color.hover} transition-all shadow-md hover:shadow-lg bg-white/80 backdrop-blur`}>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 bg-gradient-to-br ${color.bg} rounded-xl flex items-center justify-center text-white font-bold`}>
+                      {idx + 1}
+                    </div>
+                    <CardTitle className="text-lg">Scenario {idx + 1}</CardTitle>
+                  </div>
+                  {scenarios.length > 1 && (
+                    <Button
+                      onClick={() => removeScenario(idx)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
             <CardContent className="space-y-4">
               <FormField label="Institution" required>
                 <InstitutionSelector
@@ -242,8 +283,9 @@ export default function ComparePage() {
                 </Select>
               </FormField>
             </CardContent>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       {/* Results */}
@@ -262,43 +304,233 @@ export default function ComparePage() {
 
       {result && (
         <>
-          {/* Comparison Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Cost Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ComparisonChart comparisons={result.comparisons} metric="cost" />
-              </CardContent>
-            </Card>
+          {/* Overview Stats */}
+          <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-100 p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-slate-900 mb-2 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              Comparing {result.comparisons.length} Scenario{result.comparisons.length > 1 ? 's' : ''}
+            </h3>
+            <p className="text-slate-600">
+              Review the comprehensive analysis below. All metrics are calculated based on your specific inputs and current market data.
+            </p>
+          </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Debt Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ComparisonChart comparisons={result.comparisons} metric="debt" />
-              </CardContent>
-            </Card>
+          {/* Main Cost & Debt Analysis */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <DollarSign className="w-7 h-7 text-blue-600" />
+              Financial Overview
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="border-2 border-blue-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-blue-600" />
+                    Annual Cost Comparison
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ComparisonChart comparisons={result.comparisons} metric="cost" />
+                </CardContent>
+              </Card>
 
-            <Card>
+              <Card className="border-2 border-red-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-red-600" />
+                    Total Debt at Graduation
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ComparisonChart comparisons={result.comparisons} metric="debt" />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Cost Breakdown */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <BarChart3 className="w-7 h-7 text-purple-600" />
+              Cost Breakdown Analysis
+            </h3>
+            <Card className="border-2 border-purple-100 shadow-lg bg-white/80 backdrop-blur">
               <CardHeader>
-                <CardTitle>Earnings Comparison</CardTitle>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-purple-600" />
+                  Cost Components by Scenario
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <ComparisonChart comparisons={result.comparisons} metric="earnings" />
+                <MultiMetricChart
+                  comparisons={result.comparisons}
+                  metrics={[
+                    { key: 'tuition_fees', label: 'Tuition & Fees', color: '#3b82f6', formatter: formatCurrency },
+                    { key: 'housing_annual', label: 'Housing', color: '#8b5cf6', formatter: formatCurrency },
+                    { key: 'other_expenses', label: 'Other Expenses', color: '#06b6d4', formatter: formatCurrency },
+                  ]}
+                  height={350}
+                />
               </CardContent>
             </Card>
           </div>
 
+          {/* Earnings Analysis */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <TrendingUp className="w-7 h-7 text-green-600" />
+              Earnings Potential
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="border-2 border-green-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-green-600" />
+                    Year 1 Earnings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ComparisonChart comparisons={result.comparisons} metric="earnings" />
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-emerald-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-emerald-600" />
+                    Earnings Growth (3 & 5 Years)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <MultiMetricChart
+                    comparisons={result.comparisons}
+                    metrics={[
+                      { key: 'earnings_year_3', label: 'Year 3', color: '#10b981', formatter: formatCurrency },
+                      { key: 'earnings_year_5', label: 'Year 5', color: '#059669', formatter: formatCurrency },
+                    ]}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* ROI & Performance Metrics */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <Target className="w-7 h-7 text-indigo-600" />
+              Return on Investment
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="border-2 border-indigo-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Target className="w-5 h-5 text-indigo-600" />
+                    ROI Ratio
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <NumericChart
+                    comparisons={result.comparisons}
+                    metricKey="roi"
+                    metricLabel="ROI"
+                    unit="x"
+                    colors={['#6366f1', '#8b5cf6', '#a855f7', '#c026d3']}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-orange-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-orange-600" />
+                    Payback Period
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <NumericChart
+                    comparisons={result.comparisons}
+                    metricKey="payback_years"
+                    metricLabel="Years"
+                    unit=" yrs"
+                    colors={['#f97316', '#fb923c', '#fdba74', '#fed7aa']}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-amber-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Award className="w-5 h-5 text-amber-600" />
+                    Comfort Index
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <NumericChart
+                    comparisons={result.comparisons}
+                    metricKey="comfort_index"
+                    metricLabel="Score (0-100)"
+                    colors={['#f59e0b', '#fbbf24', '#fcd34d', '#fde68a']}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Risk & Success Metrics */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <Percent className="w-7 h-7 text-cyan-600" />
+              Success & Risk Indicators
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="border-2 border-cyan-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Award className="w-5 h-5 text-cyan-600" />
+                    Graduation Rate
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <PercentageChart
+                    comparisons={result.comparisons}
+                    metricKey="graduation_rate"
+                    metricLabel="Graduation Rate"
+                    colors={['#06b6d4', '#22d3ee', '#67e8f9', '#a5f3fc']}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-rose-100 shadow-lg bg-white/80 backdrop-blur">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Percent className="w-5 h-5 text-rose-600" />
+                    Debt-to-Income (Year 1)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <PercentageChart
+                    comparisons={result.comparisons}
+                    metricKey="dti_year_1"
+                    metricLabel="DTI Ratio"
+                    colors={['#f43f5e', '#fb7185', '#fda4af', '#fecdd3']}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
           {/* Detailed Comparison Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Side-by-Side Comparison</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
+          <div className="space-y-4 mt-12">
+            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <GitCompare className="w-7 h-7 text-slate-700" />
+              Detailed Metrics Table
+            </h3>
+            <Card className="border-2 border-slate-200 shadow-lg bg-white/80 backdrop-blur">
+              <CardHeader>
+                <p className="text-slate-600">Complete side-by-side comparison of all key metrics</p>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
@@ -401,15 +633,19 @@ export default function ComparePage() {
                     </tr>
                   </tbody>
                 </table>
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Warnings */}
           {result.comparisons.some(c => c.warnings.length > 0) && (
-            <Card>
+            <Card className="border-2 border-yellow-200 bg-yellow-50/50 backdrop-blur">
               <CardHeader>
-                <CardTitle>Warnings</CardTitle>
+                <CardTitle className="text-xl flex items-center gap-2 text-yellow-900">
+                  <Sparkles className="w-5 h-5" />
+                  Warnings
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -431,17 +667,23 @@ export default function ComparePage() {
           )}
 
           {/* Export */}
-          <Button onClick={handleExport} variant="outline" className="w-full">
-            Export Comparison to CSV
-          </Button>
+          <div className="pt-8 border-t border-slate-200">
+            <Button onClick={handleExport} variant="outline" className="w-full border-2 hover:border-purple-400 hover:bg-purple-50 h-14 text-lg font-semibold group">
+              <Download className="w-5 h-5 mr-2 group-hover:translate-y-0.5 transition-transform" />
+              Export Complete Comparison to CSV
+            </Button>
+          </div>
         </>
       )}
 
       {!result && !compareMutation.isPending && !compareMutation.isError && (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center text-zinc-500">
-              <p>Add scenarios above and click &quot;Compare&quot; to see side-by-side results.</p>
+        <Card className="border-2 border-dashed border-slate-300 bg-slate-50/50">
+          <CardContent className="py-16">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <GitCompare className="w-10 h-10 text-purple-600" />
+              </div>
+              <p className="text-slate-600 text-lg">Add scenarios above and click <span className="font-semibold">&quot;Compare&quot;</span> to see side-by-side results.</p>
             </div>
           </CardContent>
         </Card>

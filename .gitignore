@@ -13,3 +13,5 @@ venv/
 .env.production.local
 node_modules/
 __pycache__/
+data/Most-Recent-Cohorts-Field-of-Study.csv
+data/Most-Recent-Cohorts-Institution.csv
