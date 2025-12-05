@@ -216,7 +216,7 @@ def record_etl_metadata(data):
     ])
     
     create_etl_run_record(
-        run_type='full',
+        run_type='full_refresh',
         status='completed',
         records_processed=total_records,
         notes='Full ETL pipeline execution'

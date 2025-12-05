@@ -51,6 +51,7 @@ cd worthwise
     # Server
     HOST=0.0.0.0
     PORT=8000
+    HF_SERVICE_URL=yourhuggingfacespace.hf
     ```
 3. Navigate to the `etl` directory
 4. Create a `.env` file and add the following (edit MySQL credentials as needed):
@@ -81,16 +82,14 @@ cd worthwise
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r ../requirements.txt
 ```
 
-#### ETL (Optional: Use a separate venv or backend's)
+#### ETL
 
 ```sh
 cd ../etl
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+source ../venv/bin/activate  # Uses the venv from project root
 ```
 
 #### Frontend
@@ -104,7 +103,9 @@ npm install
 
 ### 4. Set Up the Database
 
-1. In MySQL Workbench, open and run `database/schema.sql` to create the required database schema.
+1. **For Local Development**: In MySQL Workbench, open and run `database/schema.sql` to create the required database schema.
+
+2. **For Production (Aiven)**: Use `database/schema_aiven.sql` which is compatible with managed MySQL services like Aiven. This version removes DEFINER clauses that require SUPER privileges not available in managed environments.
 
 ---
 

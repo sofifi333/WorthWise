@@ -25,14 +25,26 @@ DROP TABLE IF EXISTS `campuses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `campuses` (
-  `institution_id` bigint DEFAULT NULL,
-  `campus_name` text COLLATE utf8mb4_unicode_ci,
-  `city` text COLLATE utf8mb4_unicode_ci,
-  `state_code` text COLLATE utf8mb4_unicode_ci,
-  `zip` text COLLATE utf8mb4_unicode_ci,
-  `is_main` tinyint(1) DEFAULT NULL,
-  `is_active` tinyint(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `institution_id` int unsigned NOT NULL COMMENT 'Parent institution UNITID',
+  `campus_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Campus or branch name',
+  `city` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `state_code` char(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `zip` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(11,7) DEFAULT NULL,
+  `is_main` tinyint(1) DEFAULT '0' COMMENT 'Is this the main campus',
+  `is_active` tinyint(1) DEFAULT '1' COMMENT 'Campus currently operating',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_institution` (`institution_id`),
+  KEY `idx_campus_name` (`campus_name`(50)),
+  KEY `idx_state` (`state_code`),
+  KEY `idx_location` (`latitude`,`longitude`),
+  CONSTRAINT `campuses_ibfk_1` FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `campuses_ibfk_2` FOREIGN KEY (`state_code`) REFERENCES `states` (`state_code`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3790 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Branch campus and location data';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,13 +55,13 @@ DROP TABLE IF EXISTS `cip_codes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cip_codes` (
-  `cip_code` char(7) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '6-digit CIP code (e.g., 11.0701)',
-  `cip_title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'CIP program title',
-  `cip_2digit` char(2) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '2-digit broad field code',
-  `cip_2digit_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '2-digit field title',
-  `cip_4digit` char(5) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '4-digit intermediate code',
-  `cip_4digit_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '4-digit field title',
-  `cip_definition` text COLLATE utf8mb4_unicode_ci COMMENT 'Full CIP definition',
+  `cip_code` char(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '6-digit CIP code (e.g., 11.0701)',
+  `cip_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'CIP program title',
+  `cip_2digit` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '2-digit broad field code',
+  `cip_2digit_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '2-digit field title',
+  `cip_4digit` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '4-digit intermediate code',
+  `cip_4digit_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '4-digit field title',
+  `cip_definition` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Full CIP definition',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`cip_code`),
@@ -69,18 +81,18 @@ DROP TABLE IF EXISTS `data_quality_checks`;
 CREATE TABLE `data_quality_checks` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `etl_run_id` int unsigned DEFAULT NULL COMMENT 'Associated ETL run',
-  `dataset_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `check_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of quality check (e.g., row_count, null_check)',
-  `check_type` enum('count','null','range','uniqueness','referential_integrity','custom') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expected_value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Expected value or range',
-  `actual_value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Actual value found',
-  `status` enum('pass','fail','warning','skipped') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dataset_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `check_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Name of quality check (e.g., row_count, null_check)',
+  `check_type` enum('count','null','range','uniqueness','referential_integrity','custom') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expected_value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Expected value or range',
+  `actual_value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Actual value found',
+  `status` enum('pass','fail','warning','skipped') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `records_checked` int unsigned DEFAULT NULL,
   `records_failed` int unsigned DEFAULT NULL,
   `failure_rate` decimal(5,2) DEFAULT NULL COMMENT 'Percentage of failures',
-  `check_sql` text COLLATE utf8mb4_unicode_ci COMMENT 'SQL query used for check',
-  `error_message` text COLLATE utf8mb4_unicode_ci COMMENT 'Error or warning message',
-  `severity` enum('critical','high','medium','low','info') COLLATE utf8mb4_unicode_ci DEFAULT 'medium',
+  `check_sql` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'SQL query used for check',
+  `error_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Error or warning message',
+  `severity` enum('critical','high','medium','low','info') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'medium',
   `checked_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_etl_run` (`etl_run_id`),
@@ -101,19 +113,19 @@ DROP TABLE IF EXISTS `data_versions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `data_versions` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `dataset_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Dataset identifier (e.g., college_scorecard_institution)',
-  `version_identifier` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Version string (e.g., 2024-09-15, FY2026)',
+  `dataset_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Dataset identifier (e.g., college_scorecard_institution)',
+  `version_identifier` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Version string (e.g., 2024-09-15, FY2026)',
   `version_date` date DEFAULT NULL COMMENT 'Official version date',
-  `file_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Source file name',
-  `file_path` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Path to source file',
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Source file name',
+  `file_path` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Path to source file',
   `file_size_bytes` bigint unsigned DEFAULT NULL COMMENT 'File size in bytes',
   `row_count` int unsigned DEFAULT NULL COMMENT 'Number of rows processed',
-  `status` enum('pending','processing','loaded','active','archived','failed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `status` enum('pending','processing','loaded','active','archived','failed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `loaded_at` timestamp NULL DEFAULT NULL COMMENT 'When data was loaded',
   `activated_at` timestamp NULL DEFAULT NULL COMMENT 'When version became active',
   `archived_at` timestamp NULL DEFAULT NULL COMMENT 'When version was archived',
-  `checksum` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'SHA256 checksum of source file',
-  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Version notes, changes, or issues',
+  `checksum` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'SHA256 checksum of source file',
+  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Version notes, changes, or issues',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -134,12 +146,12 @@ DROP TABLE IF EXISTS `etl_runs`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `etl_runs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `run_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Unique run identifier (UUID)',
-  `run_type` enum('full_refresh','incremental','backfill','validation','manual') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `run_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Unique run identifier (UUID)',
+  `run_type` enum('full_refresh','incremental','backfill','validation','manual') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `started_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `completed_at` timestamp NULL DEFAULT NULL,
   `duration_seconds` int unsigned DEFAULT NULL COMMENT 'Total run duration',
-  `status` enum('running','success','partial_success','failed','cancelled') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'running',
+  `status` enum('running','success','partial_success','failed','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'running',
   `datasets_processed` json DEFAULT NULL COMMENT 'List of datasets processed with row counts',
   `datasets_failed` json DEFAULT NULL COMMENT 'List of failed datasets with error messages',
   `total_rows_processed` int unsigned DEFAULT '0',
@@ -147,13 +159,13 @@ CREATE TABLE `etl_runs` (
   `total_rows_updated` int unsigned DEFAULT '0',
   `total_rows_failed` int unsigned DEFAULT '0',
   `error_count` int unsigned DEFAULT '0',
-  `error_summary` text COLLATE utf8mb4_unicode_ci COMMENT 'Summary of errors encountered',
-  `error_log` longtext COLLATE utf8mb4_unicode_ci COMMENT 'Detailed error log',
-  `executed_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User or system that executed ETL',
-  `execution_environment` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'e.g., local, ci, production',
-  `git_commit_hash` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Git commit hash of ETL code',
+  `error_summary` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Summary of errors encountered',
+  `error_log` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Detailed error log',
+  `executed_by` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User or system that executed ETL',
+  `execution_environment` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'e.g., local, ci, production',
+  `git_commit_hash` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Git commit hash of ETL code',
   `config_used` json DEFAULT NULL COMMENT 'ETL configuration parameters',
-  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Run notes or special conditions',
+  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Run notes or special conditions',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -174,10 +186,10 @@ DROP TABLE IF EXISTS `institution_search_cache`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `institution_search_cache` (
   `institution_id` int unsigned NOT NULL,
-  `search_text` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Concatenated searchable text',
-  `display_text` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Formatted display name',
-  `state_code` char(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ownership_label` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `search_text` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Concatenated searchable text',
+  `display_text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Formatted display name',
+  `state_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ownership_label` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `programs_count` int unsigned DEFAULT '0' COMMENT 'Number of programs offered',
   `has_data` tinyint(1) DEFAULT '1' COMMENT 'Has sufficient data for calculations',
   `sort_priority` int unsigned DEFAULT '999' COMMENT 'Search result ranking',
@@ -199,12 +211,12 @@ DROP TABLE IF EXISTS `institutions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `institutions` (
   `id` int unsigned NOT NULL COMMENT 'UNITID from IPEDS',
-  `ope8_id` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '8-digit OPE ID',
-  `ope6_id` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '6-digit OPE ID',
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Institution name',
-  `city` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'City location',
-  `state_code` char(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'State postal code',
-  `zip` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ZIP code (5 or 9 digits)',
+  `ope8_id` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '8-digit OPE ID',
+  `ope6_id` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '6-digit OPE ID',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Institution name',
+  `city` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'City location',
+  `state_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'State postal code',
+  `zip` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ZIP code (5 or 9 digits)',
   `latitude` decimal(10,7) DEFAULT NULL COMMENT 'Latitude coordinate',
   `longitude` decimal(11,7) DEFAULT NULL COMMENT 'Longitude coordinate',
   `ownership` tinyint unsigned DEFAULT NULL COMMENT '1=Public, 2=Private nonprofit, 3=Private for-profit',
@@ -217,8 +229,8 @@ CREATE TABLE `institutions` (
   `operating` tinyint(1) DEFAULT '1' COMMENT 'TRUE if currently operating',
   `predominant_degree` tinyint unsigned DEFAULT NULL COMMENT '0=Not classified, 1=Certificate, 2=Associate, 3=Bachelor, 4=Graduate',
   `highest_degree` tinyint unsigned DEFAULT NULL COMMENT '0=Non-degree, 1=Certificate, 2=Associate, 3=Bachelor, 4=Graduate',
-  `school_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Institution homepage URL',
-  `price_calculator_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Net price calculator URL',
+  `school_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Institution homepage URL',
+  `price_calculator_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Net price calculator URL',
   `locale` tinyint unsigned DEFAULT NULL COMMENT 'Locale code (urban/suburban/rural)',
   `region_id` tinyint unsigned DEFAULT NULL COMMENT 'IPEDS region code',
   `carnegie_basic` tinyint unsigned DEFAULT NULL COMMENT 'Carnegie Classification basic',
@@ -250,10 +262,10 @@ DROP TABLE IF EXISTS `major_search_cache`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `major_search_cache` (
-  `cip_code` char(7) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `search_text` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Searchable text',
-  `display_text` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Formatted display name',
-  `category` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '2-digit CIP category name',
+  `cip_code` char(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `search_text` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Searchable text',
+  `display_text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Formatted display name',
+  `category` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '2-digit CIP category name',
   `institutions_count` int unsigned DEFAULT '0' COMMENT 'Number of institutions offering this major',
   `programs_count` int unsigned DEFAULT '0' COMMENT 'Total program count',
   `avg_median_earnings` int unsigned DEFAULT NULL COMMENT 'Average median earnings across programs',
@@ -276,10 +288,10 @@ DROP TABLE IF EXISTS `regions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `regions` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `geo_fips` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'FIPS code for geography',
-  `region_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Region display name',
+  `geo_fips` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'FIPS code for geography',
+  `region_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Region display name',
   `region_type` enum('national','state','metro','county','census_region') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Geographic level',
-  `state_code` char(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Associated state code (if applicable)',
+  `state_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Associated state code (if applicable)',
   `parent_region_id` int unsigned DEFAULT NULL COMMENT 'Parent region (for hierarchical structure)',
   `display_order` int unsigned DEFAULT '999' COMMENT 'Sort order for UI dropdowns',
   `is_active` tinyint(1) DEFAULT '1' COMMENT 'Show in UI selectors',
@@ -295,7 +307,7 @@ CREATE TABLE `regions` (
   KEY `parent_region_id` (`parent_region_id`),
   CONSTRAINT `regions_ibfk_1` FOREIGN KEY (`state_code`) REFERENCES `states` (`state_code`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `regions_ibfk_2` FOREIGN KEY (`parent_region_id`) REFERENCES `regions` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Geographic regions for cost-of-living adjustments';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Geographic regions for cost-of-living adjustments';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -306,11 +318,11 @@ DROP TABLE IF EXISTS `states`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `states` (
-  `state_code` char(2) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Two-letter state postal code (e.g., CA, NY)',
-  `state_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Full state name',
-  `state_fips` char(2) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'FIPS state code',
-  `region` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Census region (e.g., West, Northeast)',
-  `division` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Census division',
+  `state_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Two-letter state postal code (e.g., CA, NY)',
+  `state_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Full state name',
+  `state_fips` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'FIPS state code',
+  `region` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Census region (e.g., West, Northeast)',
+  `division` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Census division',
   `is_state` tinyint(1) DEFAULT '1' COMMENT 'TRUE for states, FALSE for territories',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -328,11 +340,11 @@ DROP TABLE IF EXISTS `system_config`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `system_config` (
-  `config_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `config_value` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value_type` enum('string','integer','float','boolean','json') COLLATE utf8mb4_unicode_ci DEFAULT 'string',
-  `category` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Config category (e.g., ui, etl, api)',
-  `description` text COLLATE utf8mb4_unicode_ci COMMENT 'Configuration description',
+  `config_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `config_value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value_type` enum('string','integer','float','boolean','json') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'string',
+  `category` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Config category (e.g., ui, etl, api)',
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Configuration description',
   `is_secret` tinyint(1) DEFAULT '0' COMMENT 'Sensitive data flag',
   `is_editable` tinyint(1) DEFAULT '1' COMMENT 'Can be modified via UI/API',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -558,5 +570,3 @@ DELIMITER ;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2025-11-02 15:53:16

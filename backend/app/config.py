@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     # Analytics Artifacts
     artifacts_path: str = Field(default="./artifacts", alias="ARTIFACTS_PATH")
     duckdb_path: str = Field(default="./artifacts/analytics.duckdb", alias="DUCKDB_PATH")
+
+    # HuggingFace AI
+    hf_service_url: str = Field(default="http://localhost:7860", alias="HF_SERVICE_URL")
     
     # Server
     host: str = Field(default="0.0.0.0", alias="HOST")
@@ -81,11 +84,11 @@ class Settings(BaseSettings):
                 "expose_headers": ["Content-Disposition"]
             }
         else:
-            # Production: Strict CORS - UPDATE WITH YOUR VERCEL URL
+            # Production: Strict CORS
             return {
                 "allow_origins": [
-                    "https://yourapp.vercel.app",  # UPDATE THIS
-                    "https://www.yourapp.com",     # UPDATE THIS
+                    "https://worthwise-backend-server.onrender.com",
+                    "https://worthwise-nu.vercel.app",
                 ],
                 "allow_credentials": True,
                 "allow_methods": ["GET", "POST", "OPTIONS"],
