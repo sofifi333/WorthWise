@@ -3,6 +3,11 @@ FastAPI Main Application
 Entry point for the WorthWise College ROI Planner API
 """
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -192,6 +197,7 @@ async def root():
             "options": f"{settings.api_v1_prefix}/options",
             "compute": f"{settings.api_v1_prefix}/compute",
             "compare": f"{settings.api_v1_prefix}/compare",
-            "export": f"{settings.api_v1_prefix}/export"
+            "export": f"{settings.api_v1_prefix}/export",
+            "summarize": f"{settings.api_v1_prefix}/summarize"
         }
     }

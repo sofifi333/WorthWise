@@ -15,6 +15,8 @@ import type {
   RegionOption,
   DataVersionResponse,
   HealthResponse,
+  SummarizeRequest,
+  SummarizeResponse,
 } from '@/types/api';
 
 // ============ Options API ============
@@ -101,6 +103,15 @@ export const exportApi = {
     document.body.appendChild(link);
     link.click();
     link.remove();
+  },
+};
+
+// ============ Summarize API ============
+
+export const summarizeApi = {
+  summarize: async (request: SummarizeRequest) => {
+    const response = await apiClient.post<SummarizeResponse>('/summarize', request);
+    return response.data;
   },
 };
 

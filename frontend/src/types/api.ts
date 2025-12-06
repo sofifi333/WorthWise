@@ -117,6 +117,22 @@ export interface DataVersionResponse {
   loaded_at: string;
 }
 
+// ============ Summarize Types ============
+
+export interface SummarizeRequest {
+  institution_name: string;
+  major_name: string;
+  tuition_fees: number;
+  earnings_year_1?: number | null;
+  earnings_year_3?: number | null;
+  roi?: number | null;
+}
+
+export interface SummarizeResponse {
+  summary: string;
+  rating: number; // 1-5 stars
+}
+
 // ============ Health Check ============
 
 export interface HealthResponse {
