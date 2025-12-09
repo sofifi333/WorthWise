@@ -1,12 +1,36 @@
 # WorthWise
 
-![WorthWise Landing Page](landing_page.png)
+[![WorthWise Presentation](/assets/Thumbnail.png)](https://drive.google.com/file/d/1LT0JDmViIWK8fXzK8VXp24YV1GmWY1ym/view?usp=sharing)
 
 WorthWise is a college return on investment (ROI) planning application that helps students make informed decisions about higher education. The platform enables users to compare colleges and programs, calculate true costs (tuition, housing, and living expenses), and project financial outcomes based on post-graduation earnings data. Users can analyze ROI, debt-to-income ratios, payback periods, and compare up to four scenarios simultaneously. The application integrates data from trusted government sources, including the U.S. Department of Education, HUD, Bureau of Economic Analysis, and Energy Information Administration.
 
 
+[Click here to explore WorthWise](https://worthwise-nu.vercel.app/)
 
+[CTP Demo Night Slides](https://docs.google.com/presentation/d/1OiMg9UnYODVICZGAXs30TRAaH4_GvJyFWDUrjZuvT_A/edit?usp=sharing)
+
+
+
+## WorthWise Showcase
+![WorthWise Landing Page](/assets/landing_page.png)
 ---
+![WorthWise Planner Page 1](/assets/Planner_page_1.png)
+![WorthWise Planner Page 2](/assets/Planner_page_2.png)
+![WorthWise Planner Page 3](/assets/Planner_page_3.png)
+---
+![WorthWise Compare Page 1](/assets/Compare_page_1.png)
+![WorthWise Compare Page 2](/assets/Compare_page_2.png)
+![WorthWise Planner Page 3](/assets/Compare_page_3.png)
+![WorthWise Planner Page 4](/assets/Compare_page_4.png)
+---
+
+## General Tech Stack
+- `Frontend:` Next.js, TypeScript, Recharts, Tailwind CSS <br>
+- `Backend:` Python, FastAPI <br>
+- `ML / Data Science:` Pandas, Numpy, Qwen3 <br>
+- `Database:` DuckDB, MySQL <br>
+
+![WorthWise Tech Stack](/assets/WorthWise_Techstack.png)
 
 ## Project Setup Guide
 
