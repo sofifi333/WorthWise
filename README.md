@@ -12,7 +12,7 @@ WorthWise is a college return on investment (ROI) planning application that help
 
 
 ## WorthWise Showcase
-![WorthWise Landing Page](/assets/landing_page.png)
+![WorthWise Landing Page](/assets/Landing_page.png)
 ---
 ![WorthWise Planner Page 1](/assets/Planner_page_1.png)
 ![WorthWise Planner Page 2](/assets/Planner_page_2.png)
